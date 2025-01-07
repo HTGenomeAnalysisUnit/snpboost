@@ -1,11 +1,11 @@
 Package: SNPBoost
 Type: Package
-Title: SNPBoost: A Tool for SNP analysis using Boosting Algorithms
+Title: SNP analysis using Boosting Algorithms
 Version: 0.1.0
-Author: hklinkhammer <>
+Author: hklinkhammer <xxxxx@gmail.com>
 Maintainer: Edoardo Giacopuzzi <edoardo.giacopuzzi@fht.org>
 Description: SNPBoost is an R package designed for the analysis of single nucleotide polymorphisms (SNPs) using boosting algorithms. It provides tools for model training, and result visualization.
-License: MIT + file LICENSE
+License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
