@@ -1,6 +1,7 @@
 export(snpboost)
 export(get_coefficients)
 export(predict_snpboost)
+export(snpboost_multiple_phenos)
 import(data.table)
 import(tidyverse)
 import(parallel)

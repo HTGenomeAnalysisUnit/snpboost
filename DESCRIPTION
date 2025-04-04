@@ -1,7 +1,7 @@
 Package: SNPBoost
 Type: Package
 Title: SNP analysis using Boosting Algorithms
-Version: 0.1.0
+Version: 0.1.1
 Author: hklinkhammer <xxxxx@gmail.com>
 Maintainer: Edoardo Giacopuzzi <edoardo.giacopuzzi@fht.org>
 Description: SNPBoost is an R package designed for the analysis of single nucleotide polymorphisms (SNPs) using boosting algorithms. It provides tools for model training, and result visualization.
@@ -27,5 +27,5 @@ Remotes:
 	chrchang/plink-ng/2.0/pgenlibr
 Suggests:
 	knitr,
-    quarto
+	quarto
 VignetteBuilder: quarto
