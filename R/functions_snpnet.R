@@ -30,12 +30,15 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
     selectCols <- c("FID", "IID", covariates, phenotype, split.col)
   }
   
-  phe.master.unsorted <- data.table::fread(
-    cmd=paste(cat_or_zcat(phenotype.file, configs), phenotype.file, ' | sed -e "s/^#//g"'),
-    colClasses = c("FID" = "character", "IID" = "character"), select = selectCols
-  )
+  message("Reading input data from ", phenotype.file)
+  phe.master.unsorted <- data.table::fread( phenotype.file, header = T )
+  new_names <- gsub("^#", "", names(current_names))
+  setnames(phe.master.unsorted, old = names(current_names), new = new_names)
+  phe.master.unsorted[, FID := as.character(FID)]
+  phe.master.unsorted[, IID := as.character(IID)]
   phe.master.unsorted$ID <- paste(phe.master.unsorted$FID, phe.master.unsorted$IID, sep = "_")
   
+  message("Sorting according to PSAM")
   # make sure the phe.master has the same individual ordering as in the genotype data
   # so that we don't have error when opening pgen file with sample subset option.
   phe.master <- phe.master.unsorted %>%

@@ -48,6 +48,7 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   }
 
   ### --- Prepare the feature matrix --- ###
+  snpboostLogger("Prepare the feature matrix")
   features <- list()
   for(s in splits){
       phe[[s]] <- phe[['master']][match(ids[[s]], phe[['master']]$ID), ]
@@ -61,6 +62,7 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   }
 
   ### --- Read genotypes --- ###
+  snpboostLogger("Read genotypes...")
   if (file.exists(paste0(genotype.pfile, '.pvar'))) {
     vars <- dplyr::mutate(dplyr::rename(data.table::fread(paste0(genotype.pfile, '.pvar')), 'CHROM'='#CHROM'), VAR_ID=paste(ID, ALT, sep='_'))$VAR_ID
     pvar <- pgenlibr::NewPvar(paste0(genotype.pfile, '.pvar'))
