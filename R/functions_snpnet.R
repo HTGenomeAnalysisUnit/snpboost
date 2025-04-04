@@ -32,8 +32,8 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
   
   message("Reading input data from ", phenotype.file)
   phe.master.unsorted <- data.table::fread( phenotype.file, header = T )
-  new_names <- gsub("^#", "", names(current_names))
-  setnames(phe.master.unsorted, old = names(current_names), new = new_names)
+  new_names <- gsub("^#", "", names(phe.master.unsorted))
+  setnames(phe.master.unsorted, old = names(phe.master.unsorted), new = new_names)
   phe.master.unsorted[, FID := as.character(FID)]
   phe.master.unsorted[, IID := as.character(IID)]
   phe.master.unsorted$ID <- paste(phe.master.unsorted$FID, phe.master.unsorted$IID, sep = "_")
