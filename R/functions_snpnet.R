@@ -51,10 +51,12 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
     data.table::as.data.table()
   rownames(phe.master) <- phe.master$ID
   
+  message("Encoding missing values")
   for (name in c(covariates, phenotype)) {
     set(phe.master, i = which(phe.master[[name]] == -9), j = name, value = NA) # missing phenotypes are encoded with -9
   }
   
+  message("Sorting complete")
   # focus on individuals with complete covariates values
   if (is.null(covariates)) {
     phe.no.missing <- phe.master
@@ -63,6 +65,7 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
       dplyr::filter_at(dplyr::vars(covariates), dplyr::all_vars(!is.na(.)))
   }
   
+  message("Filtering individuals with missing phenotype values")
   # focus on individuals with at least one observed phenotype values
   phe.no.missing <- phe.no.missing %>%
     dplyr::filter_at(dplyr::vars(phenotype), dplyr::any_vars(!is.na(.))) %>%
@@ -70,6 +73,7 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
   
   phe.no.missing.IDs <- phe.no.missing$ID
   
+  message("Filtering individuals with missing covariate values")
   if(!is.null(split.col)){
     # focus on individuals in training and validation set
     phe.no.missing.IDs <- intersect(
@@ -83,6 +87,7 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
   }
   checkMissingPhenoWarning(phe.master, phe.no.missing.IDs)
   
+  message("Finalize")
   phe.master[ phe.master$ID %in% phe.no.missing.IDs, ]
 }
 
