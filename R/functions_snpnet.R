@@ -65,30 +65,32 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
       dplyr::filter_at(dplyr::vars(covariates), dplyr::all_vars(!is.na(.)))
   }
   
-  message("Filtering individuals with missing phenotype values")
-  # focus on individuals with at least one observed phenotype values
-  phe.no.missing <- phe.no.missing %>%
-    dplyr::filter_at(dplyr::vars(phenotype), dplyr::any_vars(!is.na(.))) %>%
-    dplyr::filter(ID %in% psam.ids) # check if we have genotype
+  # We assume no missing values in the covariates and phenotype columns
+  # message("Filtering individuals with missing phenotype values")
+  # # focus on individuals with at least one observed phenotype values
+  # phe.no.missing <- phe.no.missing %>%
+  #   dplyr::filter_at(dplyr::vars(phenotype), dplyr::any_vars(!is.na(.))) %>%
+  #   dplyr::filter(ID %in% psam.ids) # check if we have genotype
   
-  phe.no.missing.IDs <- phe.no.missing$ID
+  # phe.no.missing.IDs <- phe.no.missing$ID
   
-  message("Filtering individuals with missing covariate values")
-  if(!is.null(split.col)){
-    # focus on individuals in training and validation set
-    phe.no.missing.IDs <- intersect(
-      phe.no.missing.IDs,
-      phe.master$ID[ (phe.master[[split.col]] %in% c('train', 'val', 'test')) ]
-    )
-  }
-  if(!is.null(configs[['keep']])){
-    # focus on individuals in the specified keep file
-    phe.no.missing.IDs <- intersect(phe.no.missing.IDs, readPlinkKeepFile(configs[['keep']]))
-  }
-  checkMissingPhenoWarning(phe.master, phe.no.missing.IDs)
+  # message("Filtering individuals with missing covariate values")
+  # if(!is.null(split.col)){
+  #   # focus on individuals in training and validation set
+  #   phe.no.missing.IDs <- intersect(
+  #     phe.no.missing.IDs,
+  #     phe.master$ID[ (phe.master[[split.col]] %in% c('train', 'val', 'test')) ]
+  #   )
+  # }
+  # if(!is.null(configs[['keep']])){
+  #   # focus on individuals in the specified keep file
+  #   phe.no.missing.IDs <- intersect(phe.no.missing.IDs, readPlinkKeepFile(configs[['keep']]))
+  # }
+  # checkMissingPhenoWarning(phe.master, phe.no.missing.IDs)
   
-  message("Finalize")
-  phe.master[ phe.master$ID %in% phe.no.missing.IDs, ]
+  # message("Finalize")
+  # phe.master[ phe.master$ID %in% phe.no.missing.IDs, ]
+  return(phe.master)
 }
 
 checkMissingPhenoWarning <- function(phe.master, phe.no.missing.IDs){
