@@ -36,7 +36,7 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
   setnames(phe.master.unsorted, old = names(phe.master.unsorted), new = new_names)
   phe.master.unsorted[, FID := as.character(FID)]
   phe.master.unsorted[, IID := as.character(IID)]
-  phe.master.unsorted$ID <- paste(phe.master.unsorted$FID, phe.master.unsorted$IID, sep = "_")
+  phe.master.unsorted$ID <- paste(phe.master.unsorted$FID, phe.master.unsorted$IID, sep = "__")
   
   message("Sorting according to PSAM")
   # make sure the phe.master has the same individual ordering as in the genotype data
