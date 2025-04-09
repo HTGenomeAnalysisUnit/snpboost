@@ -488,9 +488,9 @@ computeStats <- function(pfile, ids, configs) {
     gcount_df <- data.table::fread(gcount_tsv_f)
   } else {
     # To run plink2 --geno-counts, we write the list of IDs to a file
-    data.frame(ID = ids) %>%
-      tidyr::separate(ID, into=c('FID', 'IID'), sep='_') %>%
-      data.table::fwrite(keep_f, sep='\t', col.names=F)
+    #data.frame(ID = ids) %>%
+    #  tidyr::separate(ID, into=c('FID', 'IID'), sep='_') %>%
+    data.table::fwrite(ids, file=keep_f, sep='\t', col.names=F)
     
     # Run plink2 --geno-counts
     cmd_plink2 <- paste(

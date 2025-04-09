@@ -75,7 +75,7 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   for(s in splits) pgen[[s]] <- pgenlibr::NewPgen(paste0(genotype.pfile, '.pgen'), pvar=pvar, sample_subset=match(ids[[s]], ids[['psam']]))
   pgenlibr::ClosePvar(pvar)
 
-  stats <- computeStats(genotype.pfile, phe[['train']]$ID, configs = configs)
+  stats <- computeStats(genotype.pfile, phe[['train']] |> dplyr::select(FID, IID), configs = configs)
 
   ### --- End --- ###
   snpboostLoggerTimeDiff("Preprocessing end.", time.start, indent=1)
