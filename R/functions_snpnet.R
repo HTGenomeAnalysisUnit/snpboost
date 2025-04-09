@@ -14,7 +14,7 @@ readIDsFromPsam <- function(psam){
   FID <- IID <- NULL  # to deal with "no visible binding for global variable"
   df <- data.table::fread(psam) %>%
     dplyr::rename('FID' = '#FID') %>%
-    dplyr::mutate(ID = paste(FID, IID, sep='_'))
+    dplyr::mutate(ID = paste(FID, IID, sep='__'))
   df$ID
 }
 

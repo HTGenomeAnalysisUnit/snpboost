@@ -559,7 +559,7 @@ computeProduct <- function(residual, pfile, vars, stats, configs, iter) {
   colnames(residual_df) <- paste0('lambda_idx_', colnames(residual))
   residual_df %>%
     tibble::rownames_to_column("ID") %>%
-    tidyr::separate(ID, into=c('#FID', 'IID'), sep='_') %>%
+    tidyr::separate(ID, into=c('#FID', 'IID'), sep='__') %>%
     data.table::fwrite(residual_f, sep='\t', col.names=T)
   
   # Run plink2 --geno-counts

@@ -74,7 +74,8 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   pgen <- list()
   for(s in splits) pgen[[s]] <- pgenlibr::NewPgen(paste0(genotype.pfile, '.pgen'), pvar=pvar, sample_subset=match(ids[[s]], ids[['psam']]))
   pgenlibr::ClosePvar(pvar)
-
+  
+  snpboostLogger("Compute stats for variants in training set ...")
   stats <- computeStats(genotype.pfile, phe[['train']] |> dplyr::select(FID, IID), configs = configs)
 
   ### --- End --- ###
@@ -84,7 +85,8 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   n <- 0
   for (phenotype in phenotypes) {
   n <- n + 1
-  message("Processing phenotype ", n, " of ", n_phenos, ": ", phenotype)
+
+  snpboostLogger(paste0("Processing phenotype ", n, " of ", n_phenos, ": ", phenotype))
   time_snpboost_start <- Sys.time()
 
   result_dir <- file.path(configs[['results.dir']], phenotype)
