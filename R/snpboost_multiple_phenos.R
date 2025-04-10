@@ -435,15 +435,25 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
 
     fwrite(df_plot, file = paste0(fit_snpboost$configs[['results.dir']], "/df_plot.txt"), sep = "\t", row.names = FALSE)
 
-    ggplot(df_plot, aes(x = iteration)) +
+    if (max(df_plot$r2.val) <= 0) {
+      p <- ggplot(df_plot, aes(x = iteration)) +
+      geom_line(aes(y = sparsity, color = "sparsity")) +
+      geom_line(aes(y = abs(r2.val) * max(sparsity) / max(abs(df_plot$r2.val)), color = "r2")) +
+      scale_color_manual(name = "", values = c("sparsity" = "blue", "r2" = "red"), labels = c(expression(r^2), "sparsity")) +
+      scale_y_continuous(name = "sparsity", sec.axis = sec_axis(~ . * max(abs(df_plot$r2.val)) / max(df_plot$sparsity), name = paste0("- ", expression(r^2)))) +
+      theme_minimal() +
+      theme(text = element_text(size = 18))
+    } else {
+      p <- ggplot(df_plot, aes(x = iteration)) +
       geom_line(aes(y = sparsity, color = "sparsity")) +
       geom_line(aes(y = r2.val * max(sparsity) / max(df_plot$r2.val), color = "r2")) +
       scale_color_manual(name = "", values = c("sparsity" = "blue", "r2" = "red"), labels = c(expression(r^2), "sparsity")) +
       scale_y_continuous(name = "sparsity", sec.axis = sec_axis(~ . * max(df_plot$r2.val) / max(df_plot$sparsity), name = expression(r^2))) +
       theme_minimal() +
       theme(text = element_text(size = 18))
+    }
 
-    ggsave(paste0(fit_snpboost$configs[['results.dir']], "/performance_plot.png"))
+    ggsave(p, filename=paste0(fit_snpboost$configs[['results.dir']], "/performance_plot.png"))
     snpboostLogger(paste0("Performance plot saved to ", paste0(fit_snpboost$configs[['results.dir']], "/performance_plot.png")))
   }
 
