@@ -4,7 +4,7 @@
 snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes, family = NULL, metric = NULL, covariates = NULL, 
                       split.col = NULL, status.col = NULL, mem = NULL, configs = NULL,
                       p_batch = 1000, m_batch = 1000, b_max = 20000, b_stop = 2,
-                      sl = 0.1, coeff_path_save = TRUE, give_residuals = FALSE) {
+                      sl = 0.1, coeff_path_save = TRUE, give_residuals = FALSE, plot_performance=TRUE) {
 
   ID <- ALT <- NULL
 
