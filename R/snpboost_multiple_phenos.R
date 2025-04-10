@@ -83,15 +83,18 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   
   n_phenos <- length(phenotypes)
   n <- 0
+  base_results_dir <- configs[['results.dir']]
+
   for (phenotype in phenotypes) {
   n <- n + 1
+  result_dir <- file.path(base_results_dir, phenotype)
+  dir.create(result_dir, recursive = TRUE, showWarnings = FALSE)
+  configs[['results.dir']] <- result_dir
 
   snpboostLogger(paste0("Processing phenotype ", n, " of ", n_phenos, ": ", phenotype))
+  snpboostLogger(paste0("Save results to ", result_dir))
   time_snpboost_start <- Sys.time()
 
-  result_dir <- file.path(configs[['results.dir']], phenotype)
-  dir.create(result_dir, recursive = TRUE, showWarnings = FALSE)
-  
   ### --- Prepare the response --- ###
   response <- list() ; status <- list() ; surv <- list() ; pred <- list()
   for(s in splits){
@@ -403,6 +406,7 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   time_snpboost_end <- Sys.time()
 
   # Predict PRS for all samples
+  snpboostLogger("Predicting PRS for all samples ...")
   pred_all_snpboost <- predict_snpboost(fit_snpboost, genotype.pfile, phenotype.file, phenotype)
 
   # Extract coefficients and number of chosen SNPs
@@ -417,6 +421,7 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
 
   # Optional plot
   if (plot_performance) {
+    snpboostLogger("Generating performance plot ...")
     sparsity <- sapply(1:nrow(fit_snpboost$beta), function(x) length(unique(fit_snpboost$beta$name[1:x])))
 
     df_plot <- data.frame(
@@ -439,10 +444,12 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
       theme(text = element_text(size = 18))
 
     ggsave(paste0(fit_snpboost$configs[['results.dir']], "/performance_plot.png"))
+    snpboostLogger(paste0("Performance plot saved to ", paste0(fit_snpboost$configs[['results.dir']], "/performance_plot.png")))
   }
 
   # Fit glm with PRS and covariates on train and val data and predict on test data
   # data <- fread(phenotype.file) %>% mutate(IID = as.character(IID))
+  snpboostLogger("Testing on test data ...")
   pred <- data.table(IID = rownames(pred_all_snpboost$prediction), PRS = pred_all_snpboost$prediction)
 
   data <- full_join(phe[['master']], pred) %>% rename(PRS = PRS.V1) %>% filter(complete.cases(.))
@@ -455,12 +462,16 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   }
 
   # Define the full formula for the model
-  formula_model <- as.formula(paste0(phenotype, " ~ ", covariate_formula, " + PRS"))
+  formula_string <- paste0(phenotype, " ~ ", covariate_formula, " + PRS")
+  snpboostLogger(paste0("Full formula: ", formula_string))
+  formula_model <- as.formula(formula_string)
 
   # Fit glm model
+  snpboostLogger("Fitting glm model ...")
   full_model <- glm(formula_model, data = data %>% filter(train_test %in% c("train", "val")), family = "gaussian")
 
   # Predict on test data
+  snpboostLogger("Predicting on test data ...")
   pred_full_model_test <- predict.glm(full_model, newdata = data %>% filter(train_test %in% c("test")))
 
   # Compute MSEP
@@ -472,7 +483,8 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   print(paste0(phenotype, "\tMSEP on test data\t", MSEP_test_full_model))
   print(paste0(phenotype, "\tR-squared on test data\t", cor_squared_test_full_model))
   
-  # Print same lines into a file named test_perfomance_summary.tsv in the phenotype results directory 
+  # Print same lines into a file named test_perfomance_summary.tsv in the phenotype results directory
+  snpboostLogger("Saving test performance summary ...")
   summary_table <- data.frame(
     phenotype = c(phenotype, phenotype), 
     metric = c("MSEP", "R_squared"), 
