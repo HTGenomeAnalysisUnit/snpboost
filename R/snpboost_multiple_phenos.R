@@ -478,18 +478,18 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
 
   # Fit glm model
   snpboostLogger("Fitting glm model ...")
-  full_model <- glm(formula_model, data = data %>% dplyr::filter(!!sym(config[['split.col']]) %in% c("train", "val")), family = "gaussian")
+  full_model <- glm(formula_model, data = data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("train", "val")), family = "gaussian")
 
   # Predict on test data
   snpboostLogger("Predicting on test data ...")
-  pred_full_model_test <- predict.glm(full_model, newdata = data %>% dplyr::filter(!!sym(config[['split.col']]) %in% c("test")))
+  pred_full_model_test <- predict.glm(full_model, newdata = data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")))
 
   snpboostLogger("Computing MSEP and R-squared ...")
   # Compute MSEP
-  MSEP_test_full_model = mean((data %>% dplyr::filter(!!sym(config[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)) - pred_full_model_test) ^ 2)
+  MSEP_test_full_model = mean((data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)) - pred_full_model_test) ^ 2)
 
   # Compute R-squared
-  cor_squared_test_full_model = cor(data %>% dplyr::filter(!!sym(config[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)), pred_full_model_test) ^ 2
+  cor_squared_test_full_model = cor(data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)), pred_full_model_test) ^ 2
 
   print(paste0(phenotype, "\tMSEP on test data\t", MSEP_test_full_model))
   print(paste0(phenotype, "\tR-squared on test data\t", cor_squared_test_full_model))
