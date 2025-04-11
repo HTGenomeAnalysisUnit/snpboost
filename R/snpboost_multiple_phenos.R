@@ -486,13 +486,21 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
 
   snpboostLogger("Computing MSEP and R-squared ...")
   # Compute MSEP
-  MSEP_test_full_model = mean((data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)) - pred_full_model_test) ^ 2)
+  MSEP_test_full_model = try(mean((data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)) - pred_full_model_test) ^ 2))
+  if (inherits(result_error, "try-error")) { 
+    snpboostLogger("Error in computing MSEP. Save as NA")
+    MSEP_test_full_model = NA 
+  }
 
   # Compute R-squared
-  cor_squared_test_full_model = cor(data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)), pred_full_model_test) ^ 2
+  cor_squared_test_full_model = try(cor(data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)), pred_full_model_test) ^ 2)
+  if (inherits(result_error, "try-error")) { 
+    snpboostLogger("Error in computing R-squared. Save as NA")
+    cor_squared_test_full_model = NA 
+  }
 
-  print(paste0(phenotype, "\tMSEP on test data\t", MSEP_test_full_model))
-  print(paste0(phenotype, "\tR-squared on test data\t", cor_squared_test_full_model))
+  print(paste0(phenotype, " - MSEP on test data: ", MSEP_test_full_model))
+  print(paste0(phenotype, " - R-squared on test data: ", cor_squared_test_full_model))
   
   # Print same lines into a file named test_perfomance_summary.tsv in the phenotype results directory
   snpboostLogger("Saving test performance summary ...")
