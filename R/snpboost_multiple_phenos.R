@@ -487,14 +487,14 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   snpboostLogger("Computing MSEP and R-squared ...")
   # Compute MSEP
   MSEP_test_full_model = try(mean((data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)) - pred_full_model_test) ^ 2))
-  if (inherits(result_error, "try-error")) { 
+  if (inherits(MSEP_test_full_model, "try-error")) { 
     snpboostLogger("Error in computing MSEP. Save as NA")
     MSEP_test_full_model = NA 
   }
 
   # Compute R-squared
   cor_squared_test_full_model = try(cor(data %>% dplyr::filter(!!sym(configs[['split.col']]) %in% c("test")) %>% pull(all_of(phenotype)), pred_full_model_test) ^ 2)
-  if (inherits(result_error, "try-error")) { 
+  if (inherits(cor_squared_test_full_model, "try-error")) { 
     snpboostLogger("Error in computing R-squared. Save as NA")
     cor_squared_test_full_model = NA 
   }
@@ -511,7 +511,7 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   )
   write.table(summary_table, 
               file = file.path(result_dir, "test_performance_summary.tsv"), 
-              sep = "\t", row.names = FALSE, col.names = FALSE)
+              sep = "\t", quote=F, row.names = FALSE, col.names = FALSE)
 
   message(">> SNPboost finished for phenotype ", phenotype, " in ", round(difftime(Sys.time(), time_snpboost_start, units = "mins"), 2), " minutes.")
 }
