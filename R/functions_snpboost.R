@@ -50,7 +50,11 @@ predict_snpboost <- function(fit, new_genotype_file, new_phenotype_file, phenoty
   rownames(chosen_SNPs)=rep("",nrow(chosen_SNPs))
   fwrite(chosen_SNPs,paste0(fit$configs['results.dir'],"/chosen_SNPs_predict.txt"),sep="\t")
   
-  phe <- fread(new_phenotype_file)
+  if (is.data.table(new_phenotype_file)) {
+    phe <- new_phenotype_file
+  } else {
+    phe <- fread(new_phenotype_file)
+  }
   if(!is.null(subset)){
     phe <- phe[phe[[fit$configs[['split.col']]]]==subset,]
   }
