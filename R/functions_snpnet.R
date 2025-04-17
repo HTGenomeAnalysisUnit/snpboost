@@ -30,8 +30,19 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
     selectCols <- c("FID", "IID", covariates, phenotype, split.col)
   }
   
-  message("Reading input data from ", phenotype.file)
-  phe.master.unsorted <- data.table::fread( phenotype.file, header = T )
+  # If phenotype file is a data.table object take it directly to phe.master.unsorted
+  # else read it from the file
+  if (is.data.table(phenotype.file)) {
+    message("Using phenotype file as data.table")
+    phe.master.unsorted <- phenotype.file
+  } else {
+    message("Reading input data from ", phenotype.file)
+    if (!file.exists(phenotype.file)) {
+      stop("Phenotype file does not exist: ", phenotype.file)
+    }
+    phe.master.unsorted <- data.table::fread( phenotype.file, header = T )
+  }
+
   new_names <- gsub("^#", "", names(phe.master.unsorted))
   setnames(phe.master.unsorted, old = names(phe.master.unsorted), new = new_names)
   phe.master.unsorted[, FID := as.character(FID)]
