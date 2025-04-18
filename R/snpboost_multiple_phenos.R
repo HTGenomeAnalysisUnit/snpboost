@@ -415,8 +415,17 @@ snpboost_multiple_phenos <- function(genotype.pfile, phenotype.file, phenotypes,
   intercept <- betas[1]
 
   # Option 2: save complete beta vector including intercept
-  fwrite(list(rsID = str_split(names(betas), "_", simplify = TRUE)[, 1], 
-              A1 = str_split(names(betas), "_", simplify = TRUE)[, 2], 
+  beta_names_split <- str_split(names(betas), "_", simplify = TRUE)
+  rsID_value <- beta_names_split[, 1]
+  
+  # When only covariates are selected, alleles will be missing and we have to set an empty value
+  if (dim(beta_names_split)[2] > 1) {
+    A1_value <- beta_names_split[, 2]
+  } else {
+    A1_value <- rep("", length(rsID_value))
+  }
+  fwrite(list(rsID = rsID_value, 
+              A1 = A1_value, 
               beta = betas), file = paste0(fit_snpboost$configs[['results.dir']], "/betas.txt"), sep = "\t", row.names = FALSE)
 
   # Optional plot
