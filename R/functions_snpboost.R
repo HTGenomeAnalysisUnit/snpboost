@@ -65,6 +65,7 @@ predict_snpboost <- function(fit, new_genotype_file, new_phenotype_file, phenoty
     system(plink2_cmd, intern=F, wait=T)
     
     PRS <- fread(paste0(fit$configs['results.dir'],"/PRS.sscore")) %>% rename(PRS = SCORE1_SUM)
+    PRS[ , IID :=  as.character(IID)]
     
     phe_PRS <- left_join(phe,PRS,by="IID")
   }else{
