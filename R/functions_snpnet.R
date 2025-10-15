@@ -60,21 +60,22 @@ readPheMaster <- function(phenotype.file, psam.ids, family, covariates, phenotyp
     ) %>%
     dplyr::arrange(sort_order) %>% dplyr::select(-sort_order) %>%
     data.table::as.data.table()
-  rownames(phe.master) <- phe.master$ID
-  
+  message("Sorting complete")
+
   message("Encoding missing values")
   for (name in c(covariates, phenotype)) {
     set(phe.master, i = which(phe.master[[name]] == -9), j = name, value = NA) # missing phenotypes are encoded with -9
   }
   
-  message("Sorting complete")
   # focus on individuals with complete covariates values
+  message("Filtering individuals with missing covariate values")
   if (is.null(covariates)) {
     phe.no.missing <- phe.master
   } else {
     phe.no.missing <- phe.master %>%
       dplyr::filter_at(dplyr::vars(covariates), dplyr::all_vars(!is.na(.)))
   }
+  rownames(phe.master) <- phe.master$ID # set rownames for phe.master
   
   # We assume no missing values in the covariates and phenotype columns
   # message("Filtering individuals with missing phenotype values")
